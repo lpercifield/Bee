@@ -19,21 +19,23 @@
 
 #include "Bee.h"
 
-Bee::Bee(HardwareSerial *serial, uint32_t baud) {
+Bee::Bee(HardwareSerial *serial, uint32_t baud, uint8_t rxPin, uint8_t txPin) {
     _serial = serial;
-    _serialSoft = NULL;
+    _rxPin = rxPin;
+    _txPin = txPin;
+    //_serialSoft = NULL;
     _baud = baud;
     _currentPacket.offset = _currentPacket.size = _currentPacket.checksum = 0;
     _currentPacket.isEscaped = false;
 }
 
-Bee::Bee(SoftwareSerial *serial, uint32_t baud) {
-    _serial = NULL;
-    _serialSoft = serial;
-    _baud = baud;
-    _currentPacket.offset = _currentPacket.size = _currentPacket.checksum = 0;
-    _currentPacket.isEscaped = false;
-}
+// Bee::Bee(SoftwareSerial *serial, uint32_t baud) {
+//     _serial = NULL;
+//     _serialSoft = serial;
+//     _baud = baud;
+//     _currentPacket.offset = _currentPacket.size = _currentPacket.checksum = 0;
+//     _currentPacket.isEscaped = false;
+// }
 
 void Bee::tick() {
     if(!_available()) {
@@ -148,9 +150,10 @@ void Bee::sendData(String s) {
     packet[2] = packetLength & 0xFF;
     packet[len + 17] = _checksum(packet, sizeof packet);
     for(int i = 0; i < sizeof packet; i++) {
-        //Serial.println(packet[i], HEX);
+        Serial.print(packet[i]);
     }
-    _write(packet, sizeof packet);
+    //Serial.println(packet);
+    //_write(packet, sizeof packet);
 }
 
 void Bee::sendData(char *data, uint16_t size) {
@@ -211,47 +214,47 @@ void Bee::setCallback(BeeCallback callback) {
 }
 
 uint16_t Bee::_available() {
-    if(_serial == NULL) {
-        return _serialSoft->available();
-    }
+    // if(_serial == NULL) {
+    //     return _serialSoft->available();
+    // }
     return _serial->available();
 }
 
 char Bee::_read() {
-    if(_serial == NULL) {
-        return _serialSoft->read();
-    }
+    // if(_serial == NULL) {
+    //     return _serialSoft->read();
+    // }
     return _serial->read();
 }
 
 void Bee::_write(char c) {
-    if(_serial == NULL) {
-        _serialSoft->write(c);
-        return;
-    }
-    _serial->write(c);
+    // if(_serial == NULL) {
+    //     _serialSoft->write(c);
+    //     return;
+    // }
+    _serial->print(c);
 }
 
 void Bee::_write(char *c, uint16_t size) {
-    if(_serial == NULL) {
-        _serialSoft->write(c, size);
-        return;
-    }
-    _serial->write(c, size);
+    // if(_serial == NULL) {
+    //     _serialSoft->write(c, size);
+    //     return;
+    // }
+    _serial->print(c);
 }
 
 void Bee::begin() {
-    if(_serial == NULL) {
-        _serialSoft->begin(_baud);
-        return;
-    }
-    _serial->begin(_baud);
+    // if(_serial == NULL) {
+    //     _serialSoft->begin(_baud);
+    //     return;
+    // }
+    _serial->begin(_baud,_rxPin,_txPin);
 }
 
 void Bee::end() {
-    if(_serial == NULL) {
-        _serialSoft->end();
-        return;
-    }
+    // if(_serial == NULL) {
+    //     _serialSoft->end();
+    //     return;
+    // }
     _serial->end();
 }

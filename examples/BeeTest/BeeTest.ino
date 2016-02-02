@@ -17,10 +17,10 @@
  * along with Bee.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <SoftwareSerial.h> // Workaround
+//#include <SoftwareSerial.h> // Workaround
 #include <Bee.h>
 
-Bee XBee(&Serial3, 19200);
+Bee XBee(&Serial, 19200);
 
 void setup() {
   Serial.begin(115200);
